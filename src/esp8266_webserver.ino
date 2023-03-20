@@ -44,17 +44,18 @@ const char* root_html = R"(
 )";
 
 ESP8266WebServer srv{80};
+const uint8_t led_pin {13};
 
 void setup()
 {
-  Serial.begin(115200);
+  pinMode(led_pin, OUTPUT);
 
+  Serial.begin(115200);
   Serial.println();
   Serial.print("Connecting");
 
   WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, pass);
-
   WiFi.setHostname(hostname);
 
   while (WiFi.status() != WL_CONNECTED) {
@@ -69,7 +70,9 @@ void setup()
   Serial.println(WiFi.localIP());
 
   srv.on("/", []() {
+    digitalWrite(led_pin, HIGH);
     srv.send(200, "text/html", root_html);
+    digitalWrite(led_pin, LOW);
   });
 
   srv.begin();
